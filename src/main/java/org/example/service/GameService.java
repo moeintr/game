@@ -1,15 +1,12 @@
 package org.example.service;
 
 import lombok.AllArgsConstructor;
-import org.example.dto.GameResultDto;
-import org.example.dto.GetPlayerDto;
 import org.example.model.Game;
 import org.example.model.GameMove;
 import org.example.model.GameResult;
 import org.example.model.Player;
 import org.example.repository.GameRepository;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.Date;
 import java.util.List;
@@ -21,19 +18,21 @@ import java.util.Random;
 public class GameService {
     private final GameRepository gameRepository;
     
-    public Game startGame(GetPlayerDto playeOne, GetPlayerDto playerTwo) {
+    public Game startGame( String playerOneName, GameMove playerOneGameMove,
+                           String playerTwoName, GameMove playerTwoGameMove) {
         Game game = new Game().builder()
                               .playerOne(new Player().builder()
-                                      .playerName(playeOne.getName())
-                                      .gameMove(playeOne.getGameMove()).build())
+                                      .playerName(playerOneName)
+                                      .gameMove(playerOneGameMove).build())
                               .build();
-        if (Objects.isNull(playerTwo)){  //means play vs machine
+        if (Objects.isNull(playerTwoName) || Objects.isNull(playerTwoGameMove)){  //means play vs machine
             int pick = new Random().nextInt(GameMove.values().length);
             GameMove machineGameMove = GameMove.values()[pick];
             game.setPlayerTwo(new Player().builder().playerName("machine").gameMove(machineGameMove).build());
             game.setGameResult(compareMoves(game.getPlayerOne().getGameMove(), machineGameMove));
         }else {
-            game.setGameResult(compareMoves(game.getPlayerOne().getGameMove(), game.getPlayerTwo().getGameMove()));
+            game.setPlayerTwo(new Player().builder().playerName(playerTwoName).gameMove(playerTwoGameMove).build());
+            game.setGameResult(compareMoves(playerOneGameMove, playerTwoGameMove));
         }
         game.setGameDate(new Date());
         gameRepository.save(game);
