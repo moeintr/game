@@ -18,7 +18,7 @@ import java.util.Objects;
 @RequestMapping("/game")
 public class GameController {
     private final GameService gameService;
-
+    //http://localhost:8080/game/start?name=moein&gameMove=SCISSORS
     @GetMapping("/start")
     public GameResultDto startGame(@ModelAttribute GetPlayerDto playeOne, @RequestParam(value = "playerTwo", required = false) GetPlayerDto playerTwo) {
         Game game = gameService.startGame(playeOne, playerTwo);
