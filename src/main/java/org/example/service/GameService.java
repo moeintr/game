@@ -6,6 +6,7 @@ import org.example.model.GameMove;
 import org.example.model.GameResult;
 import org.example.model.Player;
 import org.example.repository.GameRepository;
+import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
@@ -57,6 +58,10 @@ public class GameService {
     
     public List<Game> findAllGames() {
         return gameRepository.findAll();
+    }
+
+    public List<Game> findGames() {
+        return gameRepository.findGames();
     }
     
     /*public List<Game> findGamesByPlayerOneName(String playerOneName) {
