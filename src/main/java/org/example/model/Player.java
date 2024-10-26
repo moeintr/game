@@ -16,8 +16,10 @@ import java.io.Serializable;
 public class Player implements Serializable {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer playerId;
+
     @Column(columnDefinition = DataTypes.NVARCHAR_100)
     private String playerName;
+
     @Enumerated(EnumType.STRING)
     private GameMove gameMove;
 }

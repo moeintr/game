@@ -16,7 +16,7 @@ import java.util.Date;
 @Builder
 public class Game implements Serializable {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    private Integer gameId;
 
     @OneToOne(cascade = CascadeType.ALL/**, fetch = FetchType.LAZY**/)
     @JoinColumn(name = "player_one")
@@ -29,6 +29,9 @@ public class Game implements Serializable {
     @Enumerated(EnumType.STRING)
     private GameResult gameResult;
 
-    @Column(name = "game_date")
-    private Date gameDate;
+    @Column(name = "start_game_date")
+    private Date startGameDate;
+
+    @Column(name = "finish_game_date")
+    private Date finishGameDate;
 }

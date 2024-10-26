@@ -1,6 +1,7 @@
 package org.example.service;
 
 import lombok.AllArgsConstructor;
+import org.example.exception.NotFoundException;
 import org.example.model.Game;
 import org.example.model.GameMove;
 import org.example.model.GameResult;
@@ -19,23 +20,31 @@ import java.util.Random;
 public class GameService {
     private final GameRepository gameRepository;
     
-    public Game startGame( String playerOneName, GameMove playerOneGameMove,
-                           String playerTwoName, GameMove playerTwoGameMove) {
+    public Game startGame(String playerOneName, GameMove playerOneGameMove) {
         Game game = new Game().builder()
                               .playerOne(new Player().builder()
-                                      .playerName(playerOneName)
-                                      .gameMove(playerOneGameMove).build())
+                                            .playerName(playerOneName)
+                                            .gameMove(playerOneGameMove).build())
                               .build();
+        game.setStartGameDate(new Date());
+        gameRepository.save(game);
+
+        return game;
+    }
+
+    public Game finishGame(int gameId, String playerTwoName, GameMove playerTwoGameMove) throws NotFoundException {
+        Game game = gameRepository.findById(gameId).orElseThrow(() -> new NotFoundException("Game not found"));
+
         if (Objects.isNull(playerTwoName) || Objects.isNull(playerTwoGameMove)){  //means play vs machine
             int pick = new Random().nextInt(GameMove.values().length);
             GameMove machineGameMove = GameMove.values()[pick];
             game.setPlayerTwo(new Player().builder().playerName("machine").gameMove(machineGameMove).build());
             game.setGameResult(compareMoves(game.getPlayerOne().getGameMove(), machineGameMove));
-        }else {
+        }else { //means play vs human
             game.setPlayerTwo(new Player().builder().playerName(playerTwoName).gameMove(playerTwoGameMove).build());
-            game.setGameResult(compareMoves(playerOneGameMove, playerTwoGameMove));
+            game.setGameResult(compareMoves(game.getPlayerOne().getGameMove(), playerTwoGameMove));
         }
-        game.setGameDate(new Date());
+        game.setFinishGameDate(new Date());
         gameRepository.save(game);
 
         return game;
