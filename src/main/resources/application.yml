@@ -5,7 +5,7 @@ spring:
     url: jdbc:sqlserver://localhost:1433;DatabaseName=Moein;encrypt=true;trustServerCertificate=true
     driver-class-name: com.microsoft.sqlserver.jdbc.SQLServerDriver
     username: sa
-    password: aA@9394485791
+    password: myjava123
 
   jpa:
     show-sql: true
