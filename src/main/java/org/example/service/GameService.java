@@ -8,6 +8,7 @@ import org.example.model.GameResult;
 import org.example.model.Player;
 import org.example.repository.GameRepository;
 import org.springframework.context.annotation.Scope;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
@@ -19,6 +20,7 @@ import java.util.Random;
 @Service
 public class GameService {
     private final GameRepository gameRepository;
+    private final SimpMessagingTemplate messagingTemplate;
     
     public Game startGame(String playerOneName, GameMove playerOneGameMove) {
         Game game = new Game().builder()
@@ -47,6 +49,7 @@ public class GameService {
         game.setFinishGameDate(new Date());
         gameRepository.save(game);
 
+        messagingTemplate.convertAndSend("/topic/game-updates", game);
         return game;
     }
 
@@ -63,6 +66,11 @@ public class GameService {
         {
             return GameResult.WIN_PLAYER_TWO;
         }
+    }
+
+    public Game findGameById(int gameId) throws NotFoundException {
+        Game game = gameRepository.findById(gameId).orElseThrow(() -> new NotFoundException("Game not found"));
+        return game;
     }
     
     public List<Game> findAllGames() {

@@ -7,6 +7,8 @@ import org.example.model.GameMove;
 import org.example.service.GameService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -30,7 +32,17 @@ public class GameController {
                                            @RequestParam(required = false) String playerTwoName,
                                            @RequestParam(required = false) GameMove playerTwoGameMove) throws NotFoundException {
         Game game = gameService.finishGame(gameId, playerTwoName, playerTwoGameMove);
+        broadcastGameUpdate(game);
         return new ResponseEntity<>(game, HttpStatus.OK);
+    }
+    @MessageMapping("/game-updates")
+    @SendTo("/topic/game-updates")
+    public Game broadcastGameUpdate(Game game) {
+        return game;
+    }
+    @GetMapping("/findGameById")
+    public ResponseEntity<Game> findGameById(@RequestParam int gameId) throws NotFoundException {
+        return new ResponseEntity<>(gameService.findGameById(gameId), HttpStatus.OK);
     }
     @GetMapping("/findAllGames")
     public ResponseEntity<List<Game>> findAllGames() {
@@ -40,8 +52,4 @@ public class GameController {
     public ResponseEntity<List<Game>> findGames() {
         return new ResponseEntity<>(gameService.findGames(), HttpStatus.OK);
     }
-    /*@PostMapping("/findGamesByPlayerOneName")
-    public List<Game> findGamesByPlayerOneName(String playerOneName) {
-        return gameService.findGamesByPlayerOneName(playerOneName);
-    }*/
 }
