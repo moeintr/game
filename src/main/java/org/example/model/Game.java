@@ -18,11 +18,11 @@ public class Game implements Serializable {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer gameId;
 
-    @OneToOne(cascade = CascadeType.ALL/**, fetch = FetchType.LAZY**/)
+    @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "player_one")
     private Player playerOne;
 
-    @OneToOne(cascade = CascadeType.ALL/**, fetch = FetchType.LAZY**/)
+    @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "player_two")
     private Player playerTwo;
 
