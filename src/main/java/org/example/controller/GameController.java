@@ -21,13 +21,13 @@ public class GameController {
     //http://localhost:8080/game/start?playerOneName=moein&playerOneGameMove=SCISSORS  --->  start game
     //http://localhost:8080/game/finish?gameId=1&playerTwoName=mahdi&playerTwoGameMove=PAPER  --->  vs human finish
     //http://localhost:8080/game/finish?gameId=1 --->  vs machine finish
-    @GetMapping("/start")
+    @PostMapping("/start")
     public ResponseEntity<Game> startGame(@RequestParam String playerOneName,
                                           @RequestParam GameMove playerOneGameMove) {
         Game game = gameService.startGame(playerOneName,playerOneGameMove);
         return new ResponseEntity<>(game, HttpStatus.OK);
     }
-    @GetMapping("/finish")
+    @PostMapping("/finish")
     public ResponseEntity<Game> finishGame(@RequestParam int gameId,
                                            @RequestParam(required = false) String playerTwoName,
                                            @RequestParam(required = false) GameMove playerTwoGameMove) throws NotFoundException, EncodeException, IOException {
