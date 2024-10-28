@@ -1,23 +1,20 @@
 package org.example.endpoint;
 
-import jakarta.websocket.EncodeException;
-import jakarta.websocket.OnClose;
-import jakarta.websocket.OnOpen;
-import jakarta.websocket.Session;
+import jakarta.websocket.*;
 import jakarta.websocket.server.ServerEndpoint;
 import org.example.model.Game;
 
 import java.io.IOException;
-import java.util.Set;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 @ServerEndpoint("/game-updates")
 public class WebSocketEndpoint {
-    private static Set<Session> sessions = ConcurrentHashMap.newKeySet();
+    private static Map<Session, Integer> sessions = new ConcurrentHashMap<>();
 
-    @OnOpen
-    public void onOpen(Session session) {
-        sessions.add(session);
+    @OnMessage
+    public void onMessage(Session session, int gameId) {
+        sessions.put(session, gameId);
     }
 
     @OnClose
@@ -26,8 +23,10 @@ public class WebSocketEndpoint {
     }
 
     public static void broadcastGameUpdate(Game game) throws IOException, EncodeException {
-        for (Session session : sessions) {
-            session.getBasicRemote().sendObject(game);
+        for (Map.Entry<Session, Integer> entry : sessions.entrySet()) {
+            if (game.getGameId().equals(entry.getValue())) {
+                entry.getKey().getBasicRemote().sendObject(game);
+            }
         }
     }
 }
